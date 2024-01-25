@@ -35,8 +35,28 @@ impl Lexer {
         self.skip_whitespace();
 
         let tok = match self.ch {
-            b'=' => Token::Assign,
+            b'=' => {
+                if self.peek() == b'=' {
+                    self.read_char();
+                    Token::Eq
+                } else {
+                    Token::Assign
+                }
+            },
             b'+' => Token::Plus,
+            b'-' => Token::Minus,
+            b'!' => {
+                if self.peek() == b'=' {
+                    self.read_char();
+                    Token::NotEq
+                } else {
+                    Token::Bang
+                }
+            },
+            b'*' => Token::Asterisk,
+            b'/' => Token::Slash,
+            b'<' => Token::Lt,
+            b'>' => Token::Gt,
             b';' => Token::Semicolon,
             b',' => Token::Comma,
             b'(' => Token::Lparen,
@@ -48,6 +68,11 @@ impl Lexer {
                 return match ident.as_str() {
                     "fn" => Token::Function,
                     "let" => Token::Let,
+                    "true" => Token::True,
+                    "false" => Token::False,
+                    "if" => Token::If,
+                    "else" => Token::Else,
+                    "return" => Token::Return,
                     _ => Token::Ident(ident)
                 }
             }
@@ -82,6 +107,15 @@ impl Lexer {
             self.read_char();
         }
     }
+
+    fn peek(&self) -> u8 {
+        if self.read_position >= self.input.len() {
+            0
+        } else {
+            self.input[self.read_position]
+        }
+
+    }
 }
 
 #[cfg(test)]
@@ -98,6 +132,17 @@ mod test {
             x + y;
         };
         let result = add(five, ten);
+        !-/*5;
+        5 < 10 > 5;
+
+        if (5 < 10) {
+            return true;
+        } else {
+            return false;
+        }
+
+        10 == 10;
+        10 != 9;
         "#;
         let mut lexer = Lexer::new(input.into());
 
@@ -138,12 +183,48 @@ mod test {
             Token::Ident("ten".into()),
             Token::Rparen,
             Token::Semicolon,
+            Token::Bang,
+            Token::Minus,
+            Token::Slash,
+            Token::Asterisk,
+            Token::Int("5".into()),
+            Token::Semicolon,
+            Token::Int("5".into()),
+            Token::Lt,
+            Token::Int("10".into()),
+            Token::Gt,
+            Token::Int("5".into()),
+            Token::Semicolon,
+            Token::If,
+            Token::Lparen,
+            Token::Int("5".into()),
+            Token::Lt,
+            Token::Int("10".into()),
+            Token::Rparen,
+            Token::Lbrace,
+            Token::Return,
+            Token::True,
+            Token::Semicolon,
+            Token::Rbrace,
+            Token::Else,
+            Token::Lbrace,
+            Token::Return,
+            Token::False,
+            Token::Semicolon,
+            Token::Rbrace,
+            Token::Int("10".into()),
+            Token::Eq,
+            Token::Int("10".into()),
+            Token::Semicolon,
+            Token::Int("10".into()),
+            Token::NotEq,
+            Token::Int("9".into()),
+            Token::Semicolon,
             Token::Eof
         ];
 
         for token in tokens {
             let next_token = lexer.next_token();
-            println!("type: {:?}, literal: {}", token, token);
             assert_eq!(token, next_token);
         }
 

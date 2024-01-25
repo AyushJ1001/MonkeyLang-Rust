@@ -12,6 +12,15 @@ pub enum Token {
     // Operators
     Assign,
     Plus,
+    Minus,
+    Bang,
+    Asterisk,
+    Slash,
+
+    Lt,
+    Gt,
+    Eq,
+    NotEq,
 
     // Delimiters
     Comma,
@@ -25,6 +34,11 @@ pub enum Token {
     // Keywords
     Function,
     Let,
+    True,
+    False,
+    If,
+    Else,
+    Return
 }
 
 impl Display for Token {
@@ -36,6 +50,14 @@ impl Display for Token {
             Token::Int(int) => int,
             Token::Assign => "=",
             Token::Plus => "+",
+            Token::Minus => "-",
+            Token::Bang => "!",
+            Token::Asterisk => "*",
+            Token::Slash => "/",
+            Token::Gt => ">",
+            Token::Lt => "<",
+            Token::Eq => "==",
+            Token::NotEq => "!=",
             Token::Comma => ",",
             Token::Semicolon => ";",
             Token::Lparen => "(",
@@ -44,6 +66,11 @@ impl Display for Token {
             Token::Rbrace => "}",
             Token::Function => "fn",
             Token::Let => "let",
+            Token::True => "true",
+            Token::False => "false",
+            Token::If => "if",
+            Token::Else => "else",
+            Token::Return => "return"
         })
     }
 }
