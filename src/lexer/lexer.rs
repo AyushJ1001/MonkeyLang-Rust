@@ -8,12 +8,12 @@ pub struct Lexer {
 }
 
 impl Lexer {
-    fn new(input: String) -> Lexer {
+    pub(crate) fn new(input: &mut String) -> Lexer {
         let mut lexer = Lexer {
             position: 0,
             read_position: 0,
             ch: 0,
-            input: input.into_bytes()
+            input: input.clone().into_bytes()
         };
 
         lexer.read_char();
@@ -114,7 +114,19 @@ impl Lexer {
         } else {
             self.input[self.read_position]
         }
+    }
+}
 
+impl Iterator for Lexer {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let tok = self.next_token();
+        if tok == Token::Eof {
+            None
+        } else {
+            Some(tok)
+        }
     }
 }
 

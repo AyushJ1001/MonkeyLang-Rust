@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 once_cell = "1.19.0"
 anyhow = "1.0.79"
+whoami = "1.4.1"
